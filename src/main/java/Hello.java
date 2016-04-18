@@ -82,6 +82,13 @@ public class Hello extends PApplet {
 		float dy = 0;
 		//TODO vector rotation, see https://en.wikipedia.org/wiki/Rotation_matrix
 
+		float cosPhi = (float)Math.cos(phi);
+		float sinPhi = (float)Math.sin(phi);
+
+		float xRot = dx * cosPhi - dy * sinPhi;
+		float yRot = dx * sinPhi + dy * cosPhi;
+
+		line(x_c,y_c,x_c + xRot, y_c + yRot);
 
 		if (phi < 2 * Math.PI) { //in radian
 			phi += 2 * Math.PI / 360; //one degree rotation
