@@ -23,11 +23,16 @@ import processing.core.PApplet;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by laemmel on 17/04/16.
  */
-public class Hello extends PApplet {
+public class Vis extends PApplet {
+
+
+	private List<VehicleInfo> vehs = new ArrayList<>();
 
 	private static final int WIDTH = 800;
 	private static final int HEIGHT = 600;
@@ -37,7 +42,7 @@ public class Hello extends PApplet {
 
 	private double phi = 0;
 
-	public Hello() {
+	public Vis() {
 		JFrame fr = new JFrame();
 		fr.setSize(WIDTH, HEIGHT);
 		JPanel panel = new JPanel();
@@ -56,46 +61,23 @@ public class Hello extends PApplet {
 
 		size(WIDTH, HEIGHT);
 		background(255);
-	}
-
-	public static void main(String[] args) {
-		new Hello();
 
 	}
 
 	@Override
 	public void draw() {
 		background(255); // eraser
-		stroke(0);
-		line(x, y, 200 + x, 200 + y);
-		if (x < HEIGHT) {
-			x += 1;
-			y += 1;
-		} else {
-			x = 0;
-			y = 0;
+		synchronized (this.vehs) {
+			for (VehicleInfo v : this.vehs) {
+				v.draw(this);
+			}
 		}
+	}
 
-		int x_c = 500;
-		int y_c = 100;
-		float dx = 50;
-		float dy = 0;
-		//TODO vector rotation, see https://en.wikipedia.org/wiki/Rotation_matrix
-
-		float cosPhi = (float)Math.cos(phi);
-		float sinPhi = (float)Math.sin(phi);
-
-		float xRot = dx * cosPhi - dy * sinPhi;
-		float yRot = dx * sinPhi + dy * cosPhi;
-
-		line(x_c,y_c,x_c + xRot, y_c + yRot);
-
-		if (phi < 2 * Math.PI) { //in radian
-			phi += 2 * Math.PI / 360; //one degree rotation
-		} else {
-			phi = 0;
+	public void update(double time, List<VehicleInfo> vehs) {
+		synchronized (this.vehs) {
+			this.vehs = new ArrayList<VehicleInfo>(vehs);
 		}
 
 	}
-
 }
