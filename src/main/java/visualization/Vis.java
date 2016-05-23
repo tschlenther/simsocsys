@@ -1,4 +1,4 @@
-/* *********************************************************************** *
+package visualization;/* *********************************************************************** *
  * project: simsocsys
  *
  *                                                                         *
@@ -19,6 +19,9 @@
  * *********************************************************************** */
 
 
+import network.Link;
+import network.Network;
+import network.Node;
 import processing.core.PApplet;
 
 import javax.swing.*;
@@ -32,6 +35,8 @@ import java.util.List;
 public class Vis extends PApplet {
 
 
+	public static final double SCALE = 100;
+
 	private List<VehicleInfo> vehs = new ArrayList<>();
 
 	private static final int WIDTH = 800;
@@ -41,6 +46,7 @@ public class Vis extends PApplet {
 	private int y = 0;
 
 	private double phi = 0;
+	private Network network = new Network();
 
 	public Vis() {
 		JFrame fr = new JFrame();
@@ -67,6 +73,21 @@ public class Vis extends PApplet {
 	@Override
 	public void draw() {
 		background(255); // eraser
+
+		synchronized (this.network) {
+			for (Link link : this.network.getLinks()) {
+
+				line((float)(SCALE*link.getFrom().getX()),(float)(SCALE*link.getFrom().getY()), (float)(SCALE*link.getTo().getX()),(float)(SCALE*link.getTo().getY()));
+
+			}
+
+			for (Node node : this.network.getNodes()) {
+				ellipseMode(CENTER);
+				fill(0,128,128,128);
+				ellipse((float)(SCALE*node.getX()),(float)(SCALE*node.getY()),10,10);
+			}
+		}
+
 		synchronized (this.vehs) {
 			for (VehicleInfo v : this.vehs) {
 				v.draw(this);
@@ -79,5 +100,11 @@ public class Vis extends PApplet {
 			this.vehs = new ArrayList<VehicleInfo>(vehs);
 		}
 
+	}
+
+	public void setNetwork(Network net) {
+		synchronized (this.network) {
+			this.network = net;
+		}
 	}
 }

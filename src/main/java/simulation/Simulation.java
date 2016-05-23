@@ -1,3 +1,4 @@
+package simulation;
 /* *********************************************************************** *
  * project: simsocsys
  *
@@ -19,6 +20,12 @@
  * *********************************************************************** */
 
 
+import network.Link;
+import network.Network;
+import network.Node;
+import visualization.VehicleInfo;
+import visualization.Vis;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,13 +44,47 @@ public class Simulation {
 	}
 
 	public static void main (String [] args) {
+
+
+
+		Network net = new Network();
+
+		Node n0 = net.createNode(0.5,0.5,0);
+		Node n1 = net.createNode(7.5,0.5,1);
+		Node n2 = net.createNode(7.5,3,2);
+		Node n3 = net.createNode(0.5,5.5,3);
+		Node n4 = net.createNode(7.5,5.5,4);
+
+		Link l0 = net.createLink(n0,n1,0);
+		Link l1 = net.createLink(n1,n2,1);
+		Link l3 = net.createLink(n2,n4,2);
+		Link l4 = net.createLink(n2,n3,3);
+		Link l5 = net.createLink(n3,n4,4);
+
+		List<Link> route1 = new ArrayList<>();
+		route1.add(l0);
+		route1.add(l1);
+		route1.add(l3);
+		List<Link> route2 = new ArrayList<>();
+		route2.add(l0);
+		route2.add(l1);
+		route2.add(l4);
+		route2.add(l5);
+
 		Simulation sim = new Simulation();
-		Vehicle v1 = new Vehicle(2,3, Vehicle.Wiring.Crossover);
+		sim.setNetwork(net);
+
+
+		Vehicle v1 = new Vehicle(2,3, route1);
 		sim.add(v1);
-		Vehicle v2 = new Vehicle(5,2, Vehicle.Wiring.Crossover);
+		Vehicle v2 = new Vehicle(5,2, route2);
 		sim.add(v2);
 		sim.run();
 
+	}
+
+	private void setNetwork(Network net) {
+		this.vis.setNetwork(net);
 	}
 
 	private void run() {
@@ -60,9 +101,7 @@ public class Simulation {
 
 			List<VehicleInfo> vInfos = new ArrayList<>();
 			for (Vehicle v : this.vehs) {
-				VehicleInfo vi = new VehicleInfo(v.getX(),v.getY(),v.getPhi(),
-						v.getSensXLeft(),v.getSensXRight(),v.getSensYLeft(),
-						v.getSensYRight(),v.getLength(),v.getWidth());
+				VehicleInfo vi = new VehicleInfo(v.getX(),v.getY(),v.getLength(),v.getWidth());
 				vInfos.add(vi);
 			}
 			this.vis.update(time,vInfos);
