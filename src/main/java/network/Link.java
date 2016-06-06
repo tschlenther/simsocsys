@@ -48,6 +48,10 @@ public class Link {
 		return to;
 	}
 
+	public int getId() {
+		return this.id;
+	}
+
 	public  double getFlX() {
 		return - (this.to.getY()-this.from.getY());
 	}

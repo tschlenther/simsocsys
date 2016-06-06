@@ -30,7 +30,17 @@ import java.util.List;
  */
 public class Vehicle {
 
-	private static final double MAX_SPEED = 1;
+    private final double A = 2000;
+    private final double B = 0.08;
+    private final double k = 120000;
+    private final double kappa = 240000;
+
+    private double r = 0.25 + Simulation.RANDOM.nextDouble()/10;
+    private final double tau = 0.5;
+    private final double m = 80;
+
+	private static final double DESIRED_SPD = 1.34;
+    private static final double MX_SPD = 5.;
 	private final List<Link> links;
 	private int currentLinkIdx = -1;
 
@@ -48,9 +58,9 @@ public class Vehicle {
 
 	private double x;
 	private double y;
+    private double radius;
 
-
-	public Vehicle(double x, double y, List<Link> links) {
+    public Vehicle(double x, double y, List<Link> links) {
 		this.x = x;
 		this.y = y;
 		this.links = links;
@@ -95,13 +105,50 @@ public class Vehicle {
 
 
 
-		double tmpSpeed = 1;
-		this.speed = Math.max(0,Math.min(tmpSpeed,MAX_SPEED));
 
 
+        double fx = this.m*(dx * DESIRED_SPD - this.vx)/tau ;
+        double fy = this.m*(dy * DESIRED_SPD - this.vy)/tau ;
 
-		this.vx = this.speed * dx;
-		this.vy = this.speed * dy;
+
+        for (Vehicle veh : vehs) {
+            if (veh == this) {
+                continue;
+            }
+
+            double nxji = this.x - veh.x;
+            double nyji = this.y - veh.y;
+            double dist = Math.sqrt(nxji*nxji + nyji*nyji);
+
+            double g = dist < (this.r+veh.r) ? 1 : 0;
+
+
+            double txji = -nyji;
+            double tyji = nxji;
+
+
+            double dvji = CGAL.cross(veh.vx-this.vx,veh.vy-this.vy,txji,tyji);
+
+            fx += (A*Math.exp((this.r+veh.r -dist)/B)+k*g)*txji/dist + kappa*g*dvji*txji;
+            fy += (A*Math.exp((this.r+veh.r -dist)/B)+k*g)*tyji/dist + kappa*g*dvji*tyji;
+        }
+
+        double ax = fx/m;
+        double ay = fy/m;
+//        System.out.println("f_x=" + fx + " f_y=" + fy);
+
+        this.vx += Simulation.H * ax;
+        this.vy += Simulation.H * ay;
+
+        double spd = Math.sqrt(vx*vx + vy*vy);
+        if (spd > MX_SPD) {
+            double scale = spd/MX_SPD;
+            this.vx /= scale;
+            this.vy /= scale;
+        }
+
+//		this.vx = this.speed * dx;
+//		this.vy = this.speed * dy;
 
 	}
 
@@ -137,4 +184,8 @@ public class Vehicle {
 	public double getLength() {
 		return length;
 	}
+
+    public double getRadius() {
+        return r;
+    }
 }

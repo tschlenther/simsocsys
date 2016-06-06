@@ -55,4 +55,8 @@ public class Node {
 	public double getY() {
 		return this.y;
 	}
+
+	public int getId() {
+		return id;
+	}
 }

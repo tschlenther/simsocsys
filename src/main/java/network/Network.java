@@ -54,6 +54,15 @@ public class Network {
 	public Collection<Node> getNodes() {
 		return nodes.values();
 	}
+
+
+	public Node getNode(int id) {
+		return this.nodes.get(id);
+	}
+
+    public Link getLink(int id) {
+        return this.links.get(id);
+    }
 }
 
 

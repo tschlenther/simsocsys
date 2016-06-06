@@ -31,15 +31,13 @@ public class VehicleInfo {
 	private final int y;
 
 
-	private final int length;
-	private final int width;
+	private final int radius;
 
-	public VehicleInfo(double x, double y,double length, double width) {
+	public VehicleInfo(double x, double y,double radius) {
 		this.x = (int) (Vis.SCALE*x);
 		this.y = (int) (Vis.SCALE*y);
 
-		this.length = (int)(Vis.SCALE*length);
-		this.width = (int)(Vis.SCALE*width);
+		this.radius = (int)(Vis.SCALE*radius);
 	}
 
 	public void draw(PApplet p) {
@@ -48,7 +46,7 @@ public class VehicleInfo {
 		p.translate(x,y);
 		p.ellipseMode(PConstants.CENTER);
 		p.fill(255,0,0);
-		p.ellipse(0,0,width,width);
+		p.ellipse(0,0,radius,radius);
 		p.popMatrix();
 
 
