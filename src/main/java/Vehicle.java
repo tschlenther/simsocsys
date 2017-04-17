@@ -81,8 +81,8 @@ public class Vehicle {
 		this.sensXRight = xPrime +dy*width/2;
 		this.sensYRight = yPrime -dx*width/2;
 
-		double leftSensActivation = 0.15;
-		double rightSensActivation = 0.1;
+		double leftSensActivation = .5;
+		double rightSensActivation = 1.;
 
 
 

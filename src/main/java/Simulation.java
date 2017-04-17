@@ -40,7 +40,7 @@ public class Simulation {
 		Simulation sim = new Simulation();
 		Vehicle v1 = new Vehicle(2,3, Vehicle.Wiring.Crossover);
 		sim.add(v1);
-		Vehicle v2 = new Vehicle(5,2, Vehicle.Wiring.Crossover);
+		Vehicle v2 = new Vehicle(5,2, Vehicle.Wiring.Straight);
 		sim.add(v2);
 		sim.run();
 
