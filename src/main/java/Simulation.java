@@ -27,57 +27,63 @@ import java.util.List;
  */
 public class Simulation {
 
-	public static final double H = 0.1;
+    public static final double H = 0.1;
 
-	private final Vis vis;
-	private List<Vehicle> vehs = new ArrayList<>();
+    private final Vis vis;
+    private List<Vehicle> vehs = new ArrayList<>();
 
-	public Simulation() {
-		this.vis = new Vis();
-	}
+    public Simulation() {
+        this.vis = new Vis();
+    }
 
-	public static void main (String [] args) {
-		Simulation sim = new Simulation();
-		Vehicle v1 = new Vehicle(2,3, Vehicle.Wiring.Crossover);
-		sim.add(v1);
-		Vehicle v2 = new Vehicle(5,2, Vehicle.Wiring.Straight);
-		sim.add(v2);
-		sim.run();
+    public static void main(String[] args) {
+        Simulation sim = new Simulation();
+        Vehicle v1 = new Vehicle(2, 3, Vehicle.Wiring.Crossover);
+        sim.add(v1);
+        Vehicle v2 = new Vehicle(5, 2, Vehicle.Wiring.Straight);
+        sim.add(v2);
+        Vehicle v3 = new Vehicle(5, 3, Vehicle.Wiring.Straight);
+        sim.add(v3);
+        Vehicle v4 = new Vehicle(5, 5, Vehicle.Wiring.Crossover);
+        sim.add(v4);
+        Vehicle v5 = new Vehicle(7, 1, Vehicle.Wiring.Crossover);
+        sim.add(v5);
+        sim.run();
 
-	}
+    }
 
-	private void run() {
-		double time = 0;
+    private void run() {
+        double time = 0;
 
-		double maxTime = 1000;
-		while (time < maxTime) {
-			for (Vehicle v : this.vehs) {
-				v.update(this.vehs);
-			}
-			for (Vehicle v : this.vehs) {
-				v.move();
-			}
+        double maxTime = 1000;
+        while (time < maxTime) {
+            for (Vehicle v : this.vehs) {
+                v.update(this.vehs);
+            }
+            for (Vehicle v : this.vehs) {
+                v.move();
+            }
+            //
+            List<VehicleInfo> vInfos = new ArrayList<>();
+            for (Vehicle v : this.vehs) {
+                VehicleInfo vi = new VehicleInfo(v.getX(), v.getY(), v.getPhi(),
+                        v.getSensXLeft(), v.getSensXRight(), v.getSensYLeft(),
+                        v.getSensYRight(), v.getLength(), v.getWidth(),v.getWiring());
+                vInfos.add(vi);
+            }
+            this.vis.update(time, vInfos);
 
-			List<VehicleInfo> vInfos = new ArrayList<>();
-			for (Vehicle v : this.vehs) {
-				VehicleInfo vi = new VehicleInfo(v.getX(),v.getY(),v.getPhi(),
-						v.getSensXLeft(),v.getSensXRight(),v.getSensYLeft(),
-						v.getSensYRight(),v.getLength(),v.getWidth());
-				vInfos.add(vi);
-			}
-			this.vis.update(time,vInfos);
+            time += H;
 
-			time += H;
+            try {
+                Thread.sleep((long) (H * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-			try {
-				Thread.sleep((long) (H*1000));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void add(Vehicle v1) {
-		this.vehs.add(v1);
-	}
+    private void add(Vehicle v1) {
+        this.vehs.add(v1);
+    }
 }
