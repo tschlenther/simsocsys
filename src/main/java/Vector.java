@@ -28,4 +28,20 @@ public class Vector {
 	public double getLength(){
 		return Math.sqrt(this.x*this.x+this.y*this.y);
 	}
+	
+	public Vector multiplicationWithScalar(double multiplicator){
+		Vector v = new Vector(this.x,this.y);
+		v.x *= multiplicator;
+		v.y *= multiplicator;
+		return v;
+	}
+	
+	public double crossProduct(Vector otherVector){
+		return (this.getX()*otherVector.getY()-otherVector.getX()*this.getY());
+	}
+	
+	public void addVector(Vector otherVector){
+		this.x += otherVector.getX();
+		this.y += otherVector.getY();
+	}
 }
