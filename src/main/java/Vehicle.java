@@ -26,146 +26,60 @@ import java.util.List;
  */
 public class Vehicle {
 
-    private static final double MAX_SPEED = 1;
-    private static final double MAX_OMEGA = Math.PI / 2;
 
-    public Wiring getWiring() {
-        return wiring;
-    }
-
-    private final Wiring wiring;
+    private final List<Link> route;
     private double vx = 0;
     private double vy = 0;
-
-    public enum Wiring {
-        Straight,
-        Crossover
-    }
-
-    private final static double FRICTION = 0.1;
-
-    private final static double FORCE = 1;
-
-
-    private final double weight = 1;
-
     private double length = 0.4;
     private double width = 0.2;
-
-    private double speed = 0;
-    private double omega = 0;
-
+    private double speed = 1;
+    
     private double x;
     private double y;
-
     private double phi = 0;//radian!!
-    private double sensXLeft;
-    private double sensYLeft;
-    private double sensXRight;
-    private double sensYRight;
 
-    public Vehicle(double x, double y, Wiring wiring) {
+
+    private int routeIndex = 0;
+
+    public Vehicle(double x, double y, List<Link> route) {
         this.x = x;
         this.y = y;
-        this.wiring = wiring;
+        this.route = route;
     }
-
 
     public void update(List<Vehicle> vehs) {
 
-        double dx = 1 * Math.cos(phi);
-        double dy = 1 * Math.sin(phi);
+        Link currentLink = this.route.get(routeIndex);
 
-        double xPrime = x + dx * length / 2;
-        double yPrime = y + dy * length / 2;
+        double dx = currentLink.getTo().getX() - this.x;
+        double dy = currentLink.getTo().getY() - this.y;
 
-        this.sensXLeft = xPrime - dy * width / 2;
-        this.sensYLeft = yPrime + dx * width / 2;
-
-        this.sensXRight = xPrime + dy * width / 2;
-        this.sensYRight = yPrime - dx * width / 2;
-
-        double leftSensActivation = .5;
-        double rightSensActivation = 1.;
+        double dist = Math.sqrt(dx*dx+dy*dy);
+        dx /= dist;
+        dy /= dist;
 
 
-        Vehicle closest = null;
-        double minSqrDist = Double.POSITIVE_INFINITY;
-        for (Vehicle v : vehs) {
-            if (v == this) {
-                continue;
-            }
+        this.vx = dx * this.speed;
+        this.vy = dy * this.speed;
 
-            double sqrDist = (this.x - v.getX()) * (this.x - v.getX()) +
-                    (this.y - v.getY()) * (this.y - v.getY());
 
-            if (sqrDist < minSqrDist) {
-                minSqrDist = sqrDist;
-                closest = v;
-            }
-        }
-        //TODO calculate left and right sensor activation
-        if (closest != null) {
-            double x = closest.getX();
-            double y = closest.getY();
-
-            double sqrDistLeft = (x - this.getSensXLeft()) * (x - this.getSensXLeft()) + (y - this.getSensYLeft()) * (y - this.getSensYLeft());
-            double sqrDistRight = (x - this.getSensXRight()) * (x - this.getSensXRight()) + (y - this.getSensYRight()) * (y - this.getSensYRight());
-            if (sqrDistLeft > sqrDistRight) {
-                leftSensActivation = 0.1;
-                rightSensActivation = 1.;
-            } else {
-                leftSensActivation = 1.;
-                rightSensActivation = 0.1;
-            }
-
-        }
-
-        double forceLeftEngine;
-        double forceRightEngine;
-        if (this.wiring == Wiring.Crossover) {
-            forceRightEngine = leftSensActivation * FORCE;
-            forceLeftEngine = rightSensActivation * FORCE;
-        } else {
-            forceRightEngine = rightSensActivation * FORCE;
-            forceLeftEngine = leftSensActivation * FORCE;
-        }
-
-        double Fdri = 2 * Math.min(forceLeftEngine, forceRightEngine);
-        double a = Fdri / weight - FRICTION;
-
-        double tmpSpeed = this.speed + Simulation.H * a;
-        this.speed = Math.max(0, Math.min(tmpSpeed, MAX_SPEED));
-
-        double Frot =  forceRightEngine - forceLeftEngine;
-
-        double alpha = Frot / (weight * width / 2);
-
-        double tmpOmega = this.omega + Simulation.H * alpha;
-        this.omega = Math.max(-MAX_OMEGA, Math.min(tmpOmega, MAX_OMEGA));
-
-        this.phi = this.phi + this.omega * Simulation.H;
-
-        this.vx = this.speed * Math.cos(phi);
-        this.vy = this.speed * Math.sin(phi);
+        this.phi = Math.atan2(vy,vx);
 
     }
 
     public void move() {
         this.x = this.x + Simulation.H * this.vx;
         this.y = this.y + Simulation.H * this.vy;
-        if (this.x > 8) {
-            this.x = 0;
+
+
+        Link currentLink = this.route.get(routeIndex);
+        if (currentLink.hasVehicleReachedEndOfLink(this)) {
+            routeIndex++;//TODO check for end of route!
         }
-        if (this.x < 0) {
-            this.x = 8;
-        }
-        if (this.y > 6) {
-            this.y = 0;
-        }
-        if (this.y < 0) {
-            this.y = 6;
-        }
+
+
+
+
 
 
     }
@@ -182,22 +96,6 @@ public class Vehicle {
         return phi;
     }
 
-    public double getSensXLeft() {
-        return sensXLeft;
-    }
-
-    public double getSensXRight() {
-        return sensXRight;
-    }
-
-    public double getSensYLeft() {
-        return sensYLeft;
-    }
-
-    public double getSensYRight() {
-        return sensYRight;
-    }
-
     public double getWidth() {
         return width;
     }
@@ -205,4 +103,6 @@ public class Vehicle {
     public double getLength() {
         return length;
     }
+
+
 }

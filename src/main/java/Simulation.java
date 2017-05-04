@@ -27,27 +27,41 @@ import java.util.List;
  */
 public class Simulation {
 
+    public static final double SCALE = 100;
+
     public static final double H = 0.1;
 
     private final Vis vis;
     private List<Vehicle> vehs = new ArrayList<>();
 
-    public Simulation() {
-        this.vis = new Vis();
+    public Simulation(Network net) {
+        this.vis = new Vis(net);
     }
 
     public static void main(String[] args) {
-        Simulation sim = new Simulation();
-        Vehicle v1 = new Vehicle(2, 3, Vehicle.Wiring.Crossover);
+
+        Network net = new Network();
+        Node n0 = net.createNode(1,1,1);
+        Node n1 = net.createNode(7,1,2);
+        Node n2 = net.createNode(7,3,3);
+        Node n3 = net.createNode(1,3,4);
+        Node n4 = net.createNode(1,5,5);
+        Node n5 = net.createNode(7,5,6);
+        Link l0 = net.createLink(n0,n1,1);
+        Link l1 = net.createLink(n1,n2,2);
+        Link l2 = net.createLink(n2,n3,3);
+        Link l3 = net.createLink(n3,n4,4);
+        Link l4 = net.createLink(n4,n5,4);
+        List<Link> route = new ArrayList<>();
+        route.add(l0);
+        route.add(l1);
+        route.add(l2);
+        route.add(l3);
+        route.add(l4);
+
+        Simulation sim = new Simulation(net);
+        Vehicle v1 = new Vehicle(1, 1, route);
         sim.add(v1);
-        Vehicle v2 = new Vehicle(5, 2, Vehicle.Wiring.Straight);
-        sim.add(v2);
-        Vehicle v3 = new Vehicle(5, 3, Vehicle.Wiring.Straight);
-        sim.add(v3);
-        Vehicle v4 = new Vehicle(5, 5, Vehicle.Wiring.Crossover);
-        sim.add(v4);
-        Vehicle v5 = new Vehicle(7, 1, Vehicle.Wiring.Crossover);
-        sim.add(v5);
         sim.run();
 
     }
@@ -66,9 +80,7 @@ public class Simulation {
             //
             List<VehicleInfo> vInfos = new ArrayList<>();
             for (Vehicle v : this.vehs) {
-                VehicleInfo vi = new VehicleInfo(v.getX(), v.getY(), v.getPhi(),
-                        v.getSensXLeft(), v.getSensXRight(), v.getSensYLeft(),
-                        v.getSensYRight(), v.getLength(), v.getWidth(),v.getWiring());
+                VehicleInfo vi = new VehicleInfo(v.getX(), v.getY(), v.getPhi(), v.getLength(), v.getWidth());
                 vInfos.add(vi);
             }
             this.vis.update(time, vInfos);

@@ -41,8 +41,10 @@ public class Vis extends PApplet {
     private int y = 0;
 
     private double phi = 0;
+    private final Network net;
 
-    public Vis() {
+    public Vis(Network net) {
+        this.net = net;
         JFrame fr = new JFrame();
         fr.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         fr.setSize(WIDTH, HEIGHT);
@@ -68,6 +70,9 @@ public class Vis extends PApplet {
     @Override
     public void draw() {
         background(255); // eraser
+
+        net.draw(this);
+
         synchronized (this.vehs) {
             for (VehicleInfo v : this.vehs) {
                 v.draw(this);
@@ -81,4 +86,5 @@ public class Vis extends PApplet {
         }
 
     }
+
 }
