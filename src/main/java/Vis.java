@@ -29,12 +29,11 @@ import java.util.List;
 /**
  * Created by laemmel on 17/04/16.
  */
+
+/*
+ * test tilmann branch
+ */
 public class Vis extends PApplet {
-
-
-	/*
-	 * TEST COMMIT
-	 */
 	
     private List<VehicleInfo> vehs = new ArrayList<>();
 
