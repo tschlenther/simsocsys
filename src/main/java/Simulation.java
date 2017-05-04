@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class Simulation {
 
-    public static final double SCALE = 100;
+    public static final double SCALE = 80;
 
     public static final double H = 0.1;
 

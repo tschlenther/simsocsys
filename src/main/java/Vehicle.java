@@ -38,7 +38,7 @@ public class Vehicle {
     private double length = 0.4;
     private double width = 0.2;
     private double vO = 1.34;
-    private double tau_i = 0.7;
+    private double tau_i = 0.5;
     
     private double phi = 0;//radian!!
 
@@ -89,7 +89,12 @@ public class Vehicle {
 
         Link currentLink = this.route.get(routeIndex);
         if (currentLink.hasVehicleReachedEndOfLink(this)) {
-            routeIndex++;//TODO check for end of route!
+        	if(routeIndex == this.route.size() -1){
+        		this.vO = 0;
+        	}
+        	else{
+        		routeIndex++;	
+        	}
         }
 
     }
