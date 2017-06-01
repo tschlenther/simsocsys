@@ -32,7 +32,7 @@ public class Simulation {
     public static final double H = 0.1;
 
     private final Vis vis;
-    private List<Vehicle> vehs = new ArrayList<>();
+    public static List<Vehicle> vehs = new ArrayList<>();
 
     public Simulation(Network net) {
         this.vis = new Vis(net);
@@ -51,24 +51,50 @@ public class Simulation {
         Link l1 = net.createLink(n1,n2,2);
         Link l2 = net.createLink(n2,n3,3);
         Link l3 = net.createLink(n3,n4,4);
-        Link l4 = net.createLink(n4,n5,4);
+        Link l4 = net.createLink(n4,n5,5);
+        Link l5 = net.createLink(n1,n0,0);
+        Link l6 = net.createLink(n0,n3,6);
+        
         List<Link> route = new ArrayList<>();
         route.add(l0);
         route.add(l1);
         route.add(l2);
         route.add(l3);
         route.add(l4);
+        route.add(l0);
+        route.add(l1);
+        route.add(l2);
 
+
+        List<Link> route2 = new ArrayList<>();
+        route2.add(l5);
+        route2.add(l2);
+        route2.add(l4);
+        route2.add(l3);
+        route2.add(l2);
+        route2.add(l1);
+        route2.add(l4);
+        
         Simulation sim = new Simulation(net);
         Vehicle v1 = new Vehicle(1, 1, route);
+        Vehicle v2 = new Vehicle(4, 1.001, route2);
+        
+        List<Vehicle> vehicles = new ArrayList<Vehicle>();
+        vehicles.add(v1);
+        vehicles.add(v2);
+        
+        
+        v1.setNeighbours(vehicles);
+        v2.setNeighbours(vehicles);
+        
         sim.add(v1);
+        sim.add(v2);
         sim.run();
 
     }
 
     private void run() {
         double time = 0;
-
         double maxTime = 1000;
         while (time < maxTime) {
             for (Vehicle v : this.vehs) {

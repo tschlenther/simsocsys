@@ -19,6 +19,7 @@
  * *********************************************************************** */
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,22 +34,36 @@ public class Vehicle {
     private double length = 0.4;
     private double width = 0.2;
     private double speed = 1;
-    
+
+    public static final double E = 2.718;
     private double x;
     private double y;
     private double phi = 0;//radian!!
-
-
+    
+    private double v0 = 1.34;
+    private double m= 80;
+    private double tau= 0.5;
+    private double k = 120000;
+    private double kappa = 240000;
+    private double a= 2000;
+    private double b = 0.08;
+    private double r = 0.3;
+    private double distanceBetweenAgents;
+    private double distanceBetweenMidPoints;
+    private int g=0;
+    private int count=0;
     private int routeIndex = 0;
-
+    List <Vehicle> neighbours = new ArrayList<>();
+    
     public Vehicle(double x, double y, List<Link> route) {
         this.x = x;
         this.y = y;
         this.route = route;
+        
     }
 
     public void update(List<Vehicle> vehs) {
-
+    	
         Link currentLink = this.route.get(routeIndex);
 
         double dx = currentLink.getTo().getX() - this.x;
@@ -58,10 +73,38 @@ public class Vehicle {
         dx /= dist;
         dy /= dist;
 
+        double fx = m * (dx * v0 - this.vx) / tau ;
+        double fy = m * (dy * v0 - this.vy) / tau ;
+        
+        for (Vehicle veh : Simulation.vehs){
+        	
+        	if (veh != this){
+//        	count ++;
+        	double nijx = this.x - veh.x;
+        	double nijy = this.y - veh.y;
+	        distanceBetweenMidPoints = Math.sqrt((nijx * nijx) + (nijy * nijy));
+	        nijx /= distanceBetweenMidPoints;
+	        nijy /= distanceBetweenMidPoints;
+	        
+	        distanceBetweenAgents = r * 2 - distanceBetweenMidPoints;
+	        if (distanceBetweenMidPoints < r *2){
+	        	g=1;
+	        }
+//	        +k*g*distanceBetweenAgents
+	        double fijx=(a*Math.pow(Math.E, distanceBetweenAgents/b))*nijx;
+	        double fijy=(a*Math.pow(Math.E, distanceBetweenAgents/b))*nijy;
+	        fx += fijx;
+	        fy += fijy;
+	        
+	       
+        }
+        }
+        double ax = fx/m;
+        double ay = fy/m;
 
-        this.vx = dx * this.speed;
-        this.vy = dy * this.speed;
 
+        this.vx += Simulation.H * ax;
+        this.vy += Simulation.H * ay;
 
         this.phi = Math.atan2(vy,vx);
 
@@ -100,6 +143,13 @@ public class Vehicle {
         return width;
     }
 
+    public void setNeighbours(List<Vehicle> newNeighbours){
+    	this.neighbours = newNeighbours;
+    }
+    
+    public List<Vehicle> getNeighbours() {
+		return neighbours;
+	}    
     public double getLength() {
         return length;
     }
